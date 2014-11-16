@@ -10,3 +10,4 @@ MVP Android Example used to explain how to use this pattern in our Android apps.
 ## Enhancements
 
 * [Butterknife](http://jakewharton.github.io/butterknife)
+* [Otto](http://square.github.io/otto/)
