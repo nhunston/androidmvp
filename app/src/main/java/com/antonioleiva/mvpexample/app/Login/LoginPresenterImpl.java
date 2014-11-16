@@ -18,32 +18,46 @@
 
 package com.antonioleiva.mvpexample.app.Login;
 
-public class LoginPresenterImpl implements LoginPresenter, OnLoginFinishedListener {
+import com.antonioleiva.mvpexample.app.Login.bus.BusServiceImpl;
+import com.antonioleiva.mvpexample.app.Login.events.LoginSuccessEvent;
+import com.antonioleiva.mvpexample.app.Login.events.PasswordErrorEvent;
+import com.antonioleiva.mvpexample.app.Login.events.UsernameErrorEvent;
+import com.squareup.otto.Subscribe;
+
+public class LoginPresenterImpl implements LoginPresenter {
 
     private LoginView loginView;
     private LoginInteractor loginInteractor;
 
+    private BusServiceImpl busService;
+
     public LoginPresenterImpl(LoginView loginView) {
+        this.busService = BusServiceImpl.getInstance();
+        this.busService.register(this);
+
         this.loginView = loginView;
-        this.loginInteractor = new LoginInteractorImpl();
+        this.loginInteractor = new LoginInteractorImpl(busService);
     }
 
     @Override public void validateCredentials(String username, String password) {
         loginView.showProgress();
-        loginInteractor.login(username, password, this);
+        loginInteractor.login(username, password);
     }
 
-    @Override public void onUsernameError() {
+    @Subscribe
+    public void onUsernameError(UsernameErrorEvent event) {
         loginView.setUsernameError();
         loginView.hideProgress();
     }
 
-    @Override public void onPasswordError() {
+    @Subscribe
+    public void onPasswordError(PasswordErrorEvent event) {
         loginView.setPasswordError();
         loginView.hideProgress();
     }
 
-    @Override public void onSuccess() {
+    @Subscribe
+    public void onSuccess(LoginSuccessEvent event) {
         loginView.navigateToHome();
     }
 }
